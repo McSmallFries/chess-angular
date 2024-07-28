@@ -1,0 +1,18 @@
+<!-- <table #uiBoardRoot id="board">
+  <tr *ngFor="let row of uiRows">
+    <td *ngFor="let tile of row">
+      <div *ngIf="tile.tile.isWhite" class="ui-tile-white">
+        {{tile.tile.index}}
+      </div>
+      <div *ngIf="!tile.tile.isWhite" class="ui-tile-black">
+        {{tile.tile.index}}
+      </div>
+    </td>
+  </tr>
+</table> -->
+
+<div #uiBoardRoot id="board">
+  <div *ngFor="let row of rows" class="row">
+    <app-tile *ngFor="let tile of row" [tile]="tile" (tileClick)="onTileClick($event)"></app-tile>
+  </div>
+</div>

@@ -1,0 +1,6 @@
+<div #thisTile *ngIf="tile.isWhite" class="ui-tile-white" (click)="onTileClick($event)">
+  <img *ngIf="isOccupied" [src]="optionalImageSource" class="center">
+</div>
+<div #thisTile *ngIf="!tile.isWhite" class="ui-tile-black" (click)="onTileClick($event)">
+  <img *ngIf="isOccupied" [src]="optionalImageSource" class="center">
+</div>
