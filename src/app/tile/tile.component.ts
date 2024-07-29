@@ -43,9 +43,9 @@ export class TileComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void 
   {
-    if (this.tile.currentlyOccupiedBy !== '')  {
+    if (this.tile.currentlyOccupiedBy)  {
       this.isOccupied = true;
-      this.optionalImageSource = `./assets/pieces/${this.tile.currentlyOccupiedBy}.png`
+      this.optionalImageSource = `./assets/pieces/${this.tile.currentlyOccupiedBy.FileName}`
     }
   }
 

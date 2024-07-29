@@ -21,6 +21,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
   onTileClick(tile: Tile)  {
     console.log(tile);
+    const firstTile = this.game.tileClicks.$_TileClicks.getValue()[0];
+    const tileClicks = (firstTile) ? [firstTile, tile] as Tile[] : [tile] as Tile[];
+    this.game.tileClicks.$_TileClicks.next(tileClicks)
   }
 
   ngAfterViewInit(): void {
