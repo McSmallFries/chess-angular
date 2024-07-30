@@ -20,3 +20,11 @@
   width: 100%;
   height: 100%;
 }
+
+.can-move-here-white {
+  background: radial-gradient(ellipse at center, rgba(207,207,207,1) 0%, rgba(207,207,207,1) 38%, rgba(207,207,207,1) 70%, rgba(207,207,207,1) 92%, rgba(207,207,207,1) 100%);
+}
+
+.can-move-here-black {
+  background: radial-gradient(ellipse at center, rgba(82,82,82,1) 0%, rgba(97,97,97,1) 38%, rgba(46,46,46,1) 70%, rgba(31,31,31,1) 92%, rgba(45,45,45,1) 100%);
+}

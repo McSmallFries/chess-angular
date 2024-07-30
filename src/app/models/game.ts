@@ -115,7 +115,9 @@ export class Tile  {
   index: string;
   isWhite: boolean;
   currentlyOccupiedBy: Piece | undefined;
-  constructor(index: string, isWhite: boolean)  {
+
+
+  constructor(index: string = '', isWhite: boolean = false)  {
     this.isWhite = isWhite;
     this.index = index;
   }

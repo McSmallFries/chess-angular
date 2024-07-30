@@ -10,6 +10,8 @@ export class GameService {
   board: BoardMatrix;
   tileClicks: PlayerClicks;
   isWhitesTurn = true;
+
+  SubjectTile: Tile = new Tile();
   
 
   constructor()  {
@@ -26,6 +28,10 @@ export class GameService {
       if (!tiles[0]?.currentlyOccupiedBy) { return; }
       const subjectTile = tiles[0] as Tile;
       subjectTile.currentlyOccupiedBy!.CanMoveToTiles.push(...this.calculateAvailableMoves(tiles[0].currentlyOccupiedBy) as Tile[]);
+      this.SubjectTile = subjectTile
+    }
+    if (tiles.length === 2)  {
+      this.tileClicks.$_TileClicks.next([]);
     }
   }
 
@@ -93,32 +99,38 @@ export class GameService {
   }
 
   calculateAvailableMoves(piece: Piece): Tile[]  {
-      const availableMoves = new Array<Tile>();
       if (piece.Type === 'pawn')  {
-        const firstMove = piece.CurrentPosition === piece.StartingPosition;
-        const fullVertical = this.board.GetColumn(piece.CurrentPosition[0]);
-        if (firstMove)  { 
-          const direction = piece.IsWhite ? Direction.SOUTH : Direction.NORTH;
-          piece.Range += 1; 
-          let nextTileIdx = piece.CurrentPosition;
-          let canTake;
-          for (let i = 0; i < piece.Range; i++)  {
-              nextTileIdx = this.getNextTile(nextTileIdx, direction);
-              const nextTile = this.board.BoardState.get(nextTileIdx) as Tile;
-              if ((i < 1))  {
-                canTake = this.checkPawnDiagonals(piece);
-              }
-              if (!nextTile.currentlyOccupiedBy)  {
-                availableMoves.push(nextTile);
-              }
-              if (canTake && canTake?.length)  {
-                const canTakeFoSho = canTake as Tile[]
-                availableMoves.push(...canTakeFoSho);
-              }
-          }
+        const a = this.calculatePawnMoves(piece);
+        console.log(a);
+        return a;
+      }
+      return [];
+  }
+
+  calculatePawnMoves(piece: Piece)  {
+    const validMoves = new Array<Tile>();
+    const firstMove = piece.CurrentPosition === piece.StartingPosition;
+    const fullVertical = this.board.GetColumn(piece.CurrentPosition[0]);
+    if (firstMove)  { 
+        const direction = piece.IsWhite ? Direction.SOUTH : Direction.NORTH;
+        piece.Range += 1; 
+        let nextTileIdx = piece.CurrentPosition;
+        let canTake;
+        for (let i = 0; i < piece.Range; i++)  {
+            nextTileIdx = this.getNextTile(nextTileIdx, direction);
+            const nextTile = this.board.BoardState.get(nextTileIdx) as Tile;
+            if ((i < 1))  {
+              canTake = this.checkPawnDiagonals(piece);
+            }
+            if (canTake && canTake?.length && !nextTile.currentlyOccupiedBy)  {
+              const canTakeFoSho = canTake as Tile[]
+              validMoves.push(...canTakeFoSho);
+            } else if (!nextTile.currentlyOccupiedBy)  {
+              validMoves.push(nextTile);
+            }
         }
       }
-      return availableMoves
+      return validMoves;
   }
 
   checkPawnDiagonals(piece: Piece): false | Tile[]  {
