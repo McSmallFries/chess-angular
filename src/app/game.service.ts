@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BoardMatrix, Direction, Piece, PlayerClicks, Tile } from './models/game';
 import { Utilities } from './models/settings';
+import { TileComponent } from './tile/tile.component';
 
 @Injectable({
   providedIn: 'root'
@@ -21,13 +22,13 @@ export class GameService {
     this.newGame();
   }
 
-  handlePlayerClicks = (tiles: Tile[]) => {
+  handlePlayerClicks = (tiles: TileComponent[]) => {
     console.log("handling deez clicks", tiles);
     if (!tiles)  { return; }
     if (tiles.length === 1)  {
-      if (!tiles[0]?.currentlyOccupiedBy) { return; }
-      const subjectTile = tiles[0] as Tile;
-      subjectTile.currentlyOccupiedBy!.CanMoveToTiles.push(...this.calculateAvailableMoves(tiles[0].currentlyOccupiedBy) as Tile[]);
+      if (!tiles[0]?.tile.currentlyOccupiedBy) { return; }
+      const subjectTile = tiles[0].tile as Tile;
+      subjectTile.currentlyOccupiedBy!.CanMoveToTiles.push(...this.calculateAvailableMoves(tiles[0].tile.currentlyOccupiedBy) as Tile[]);
       this.SubjectTile = subjectTile
     }
     if (tiles.length === 2)  {

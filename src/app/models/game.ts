@@ -1,5 +1,6 @@
 import { BehaviorSubject } from "rxjs";
 import { Utilities } from "./settings";
+import { TileComponent } from "../tile/tile.component";
 
 
 export enum Direction  {
@@ -14,9 +15,9 @@ export enum Direction  {
 }
 
 export class PlayerClicks  {
-    $_TileClicks: BehaviorSubject<Tile[]>;
+    $_TileClicks: BehaviorSubject<TileComponent[]>;
     constructor()  {
-        this.$_TileClicks = new BehaviorSubject<Tile[]>([]);
+        this.$_TileClicks = new BehaviorSubject<TileComponent[]>([]);
     }
 }
 
