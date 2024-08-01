@@ -2,6 +2,11 @@ import { BehaviorSubject } from "rxjs";
 import { Utilities } from "./settings";
 import { TileComponent } from "../tile/tile.component";
 
+export enum ClickRole  {
+  FIRST_CLICK = 1,
+  SECOND_CLICK = 2
+}
+
 
 export enum Direction  {
   NORTH = 1,
@@ -14,12 +19,15 @@ export enum Direction  {
   SOUTH_WEST = 8
 }
 
+
 export class PlayerClicks  {
     $_TileClicks: BehaviorSubject<TileComponent[]>;
+    
     constructor()  {
         this.$_TileClicks = new BehaviorSubject<TileComponent[]>([]);
     }
 }
+
 
 export class Piece  {
   StartingPosition: string;
@@ -45,7 +53,7 @@ export class Piece  {
 
   getRange()  {
     switch(this.Type)  {
-      case 'king': 
+      case 'king':
       case 'pawn': return 1;
       case 'bishop':
       case 'queen':
@@ -55,7 +63,10 @@ export class Piece  {
     }
   }
 }
+
+
 export class BoardMatrix  {
+
   BoardState: Map<string, Tile>;
   BoardAccess: Map<string, Tile[]>;
 
@@ -70,7 +81,7 @@ export class BoardMatrix  {
         const isWhite = conditionA || conditionB;
         const tileIdx = letter + rows.toString();
         this.BoardState.set(tileIdx, new Tile(tileIdx, isWhite));
-      } 
+      }
     }
     this.BoardAccess.set('row1', this.GetRow(1));
     this.BoardAccess.set('row2', this.GetRow(2));
@@ -81,6 +92,8 @@ export class BoardMatrix  {
     this.BoardAccess.set('row7', this.GetRow(7));
     this.BoardAccess.set('row8', this.GetRow(8));
   }
+
+
 
   public GetRow(rowIdx: number): Tile[]  {
     if (rowIdx > 8)  {
@@ -94,6 +107,8 @@ export class BoardMatrix  {
     return row;
   }
 
+
+
   public GetColumn(columnIdx: string): Tile[]  {
     if (columnIdx.length > 1)  {
       return [];
@@ -101,7 +116,6 @@ export class BoardMatrix  {
     if (!Utilities.ALPHABET.includes(columnIdx))  {
       return [];
     }
-    
     const column: Tile[] = [];
     /* Gets (columnIdx 1 - 8) e.g. A1, A2, A3, ... A8*/
     for ( let i = 1; i < 9; i++ )  {
@@ -115,12 +129,13 @@ export class BoardMatrix  {
 export class Tile  {
   index: string;
   isWhite: boolean;
+  isHighlighted: boolean;
   currentlyOccupiedBy: Piece | undefined;
-
 
   constructor(index: string = '', isWhite: boolean = false)  {
     this.isWhite = isWhite;
     this.index = index;
+    this.isHighlighted = false;
   }
 
   setOccupation(newPiece: Piece)  {
@@ -129,3 +144,4 @@ export class Tile  {
     }
   }
 }
+

@@ -6,6 +6,7 @@ import { Tile } from '../models/game';
   templateUrl: './tile.component.html',
   styleUrls: ['./tile.component.css']
 })
+
 export class TileComponent implements OnInit, AfterViewInit {
 
   @ViewChild('thisTile') thisTile: any;
@@ -15,7 +16,6 @@ export class TileComponent implements OnInit, AfterViewInit {
   @Output() tileClick: EventEmitter<Tile>;
 
   innerHtml: string;
-
   isOccupied = false;
   optionalImageSource: string = '';
 
@@ -26,6 +26,8 @@ export class TileComponent implements OnInit, AfterViewInit {
     this.innerHtml = `<td>${this.tile.index}</td>`;
   }
 
+
+
   onTileClick(evt: any)  {
     // console.log(evt);
     // console.log(this.tile.index);
@@ -35,13 +37,16 @@ export class TileComponent implements OnInit, AfterViewInit {
     this.tileClick.emit(this.tile);
   }
 
+
+
   ngAfterViewInit(): void {
     /* Set DOM Element id to the chess Index */
     this.thisTile.nativeElement.id = this.tile.index;
-    
   }
 
-  ngOnInit(): void 
+
+
+  ngOnInit(): void
   {
     if (this.tile.currentlyOccupiedBy)  {
       this.isOccupied = true;
@@ -50,3 +55,4 @@ export class TileComponent implements OnInit, AfterViewInit {
   }
 
 }
+
