@@ -26,6 +26,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
   onTileClick(component: TileComponent)  {
     const tilesClicked = this.game.tileClicks.$_TileClicks.getValue();
     const firstTile = tilesClicked[0] as TileComponent;
+    const isSameClick = component.tile.index === firstTile?.tile?.index;
+    if (isSameClick) return this.neutralizeBoard();
     const tileClicks = (firstTile) ? [firstTile, component] as TileComponent[] : [component] as TileComponent[];
     this.game.tileClicks.$_TileClicks.next(tileClicks);
 
@@ -38,29 +40,33 @@ export class BoardComponent implements OnInit, AfterViewInit {
     if (tileClicks.length === ClickRole.SECOND_CLICK)  {
       const fromTile = tileClicks[0];
       const toTile = tileClicks[1];
+      
       const validMove = this.currentlyHighlighted
         .map(t => t.index)
           .includes(toTile.tile.index) && !toTile.isOccupied;
-          debugger;
+          
       if (validMove)  {
         this.movePieceToTile(fromTile, toTile);
       }
-      this.highlightGridCells(this.game.SubjectPiece, this.currentlyHighlighted, true);
-      this.game.setSubjectPieceAndTile(undefined, new Tile());
-      this.game.tileClicks.$_TileClicks.next([]);
+      this.neutralizeBoard();
     }
   }
 
-
+  neutralizeBoard()  {
+    this.highlightGridCells(this.game.SubjectPiece, this.currentlyHighlighted, true);
+    this.game.setSubjectPieceAndTile(undefined, new Tile());
+    this.game.tileClicks.$_TileClicks.next([]);
+  }
 
   movePieceToTile(fromTile: TileComponent, toTile: TileComponent)  {
+      this.game.SubjectPiece!.CanMoveToTiles = new Array<Tile>();
       this.game.SubjectPiece!.CurrentPosition = toTile.tile.index;
       toTile.optionalImageSource = fromTile.optionalImageSource;
       toTile.isOccupied = true;
       toTile.tile.currentlyOccupiedBy = this.game.SubjectPiece;
       fromTile.optionalImageSource = '';
       fromTile.isOccupied = false;
-      fromTile.tile.currentlyOccupiedBy = undefined
+      fromTile.tile.currentlyOccupiedBy = undefined;
   }
 
 
@@ -69,7 +75,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     if (!currentPosition)  { return; }
     if (!cellsToHighlight?.length) { return; }
     debugger;
-    const stringRefs = cellsToHighlight.map(tile => tile.index);
+    const stringRefs = new Set(cellsToHighlight.map(tile => tile.index));
     for (const idx  of stringRefs)  {
         const tile = this.game.board.BoardState.get(idx) as Tile;
         tile.isHighlighted = !revert;
@@ -78,6 +84,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }
     if (revert)  {
       this.currentlyHighlighted = [];
+      this.refreshAllRows();
     }
   }
 
@@ -85,7 +92,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.rows = [];
     for(let i = 1; i < 9; i++)  {
       const idxStr = `row${i}`;
-      this.rows[i - 1] = ( this.game.board.BoardAccess.get(idxStr) as Tile[] );
+      const tileRow = this.game.board.BoardAccess.get(idxStr) as Tile[];
+      // tileRow.forEach(tile => tile.isHighlighted = false);
+      this.rows[i - 1] = ( tileRow );
     }
   }
 

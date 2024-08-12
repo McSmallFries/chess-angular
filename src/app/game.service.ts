@@ -41,10 +41,11 @@ export class GameService {
     // if (!tiles[0]?.tile.currentlyOccupiedBy) { return; }
 
     if (tiles.length === ClickRole.FIRST_CLICK) {
-      const subjectTile = tiles[0].tile as Tile;
-      subjectTile.currentlyOccupiedBy!.CanMoveToTiles.push(...this.calculateAvailableMoves(tiles[0].tile.currentlyOccupiedBy as Piece) as Tile[]);
-      this.SubjectPiece = subjectTile.currentlyOccupiedBy;
-      this.SubjectTile = subjectTile
+      this.SubjectTile = tiles[0].tile as Tile;
+      this.SubjectTile.currentlyOccupiedBy?.CanMoveToTiles.push(...this.calculateAvailableMoves(this.SubjectTile.currentlyOccupiedBy as Piece) as Tile[]);
+      this.SubjectPiece = this.SubjectTile.currentlyOccupiedBy;
+
+      this.board.PrintBoard();
     }
   }
 
@@ -64,10 +65,10 @@ export class GameService {
     const whitePawnRow = this.board.GetRow(2) as Tile[];
     const blackPawnRow = this.board.GetRow(7) as Tile[];
     for (let tile of whitePawnRow) {
-      tile.currentlyOccupiedBy = new Piece(tile.index, 'pawn_white');
+      this.setTileOccupied(tile.index, new Piece(tile.index, 'pawn_white'));
     }
     for (let tile of blackPawnRow) {
-      tile.currentlyOccupiedBy = new Piece(tile.index, 'pawn_black');
+      this.setTileOccupied(tile.index, new Piece(tile.index, 'pawn_black'));
     }
     this.setTileOccupied('A8', new Piece("A8", "rook_black"));
     this.setTileOccupied('B8', new Piece("B8", "knight_black"));
@@ -136,9 +137,11 @@ export class GameService {
   calculatePawnMoves(piece: Piece) {
     const validMoves = new Array<Tile>();
     const firstMove = piece.CurrentPosition === piece.StartingPosition;
-    const fullVertical = this.board.GetColumn(piece.CurrentPosition[0]);
+    // const fullVertical = this.board.GetColumn(piece.CurrentPosition[0]);
     if (firstMove) {
       piece.Range = 2;
+    } else {
+      piece.Range = 1;
     }
     const direction = piece.IsWhite ? Direction.SOUTH : Direction.NORTH;
     let nextTileIdx = piece.CurrentPosition;
@@ -146,14 +149,15 @@ export class GameService {
     for (let i = 0; i < piece.Range; i++) {
       nextTileIdx = this.getNextTile(nextTileIdx, direction);
       const nextTile = this.board.BoardState.get(nextTileIdx) as Tile;
+      console.log("i = " + i + " nextTile = ", nextTile);
       debugger;
       if ((!firstMove)) {
         canTake = this.checkPawnDiagonals(piece);
       }
-      if (canTake && canTake?.length && !nextTile.currentlyOccupiedBy) {
+      if (canTake && canTake?.length && (nextTile.currentlyOccupiedBy?.IsWhite != piece.IsWhite)) {
         const canTakeFoSho = canTake as Tile[]
         validMoves.push(...canTakeFoSho);
-      } else if (!nextTile.currentlyOccupiedBy) {
+      } else if (nextTile.currentlyOccupiedBy?.IsWhite != piece.IsWhite) {
         validMoves.push(nextTile);
       }
     }

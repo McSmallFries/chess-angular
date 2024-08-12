@@ -15,6 +15,7 @@ export class TileComponent implements OnInit, AfterViewInit {
 
   @Output() tileClick: EventEmitter<Tile>;
 
+  index: string = '';
   innerHtml: string;
   isOccupied = false;
   optionalImageSource: string = '';
@@ -34,7 +35,7 @@ export class TileComponent implements OnInit, AfterViewInit {
     /*
     Might need more logic here, might not.
     */
-    this.tileClick.emit(this.tile);
+    this.tileClick.emit(evt);
   }
 
 
@@ -49,6 +50,7 @@ export class TileComponent implements OnInit, AfterViewInit {
   ngOnInit(): void
   {
     if (this.tile.currentlyOccupiedBy)  {
+      this.index = this.tile.index;
       this.isOccupied = true;
       this.optionalImageSource = `./assets/pieces/${this.tile.currentlyOccupiedBy.FileName}`
     }

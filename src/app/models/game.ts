@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, of } from "rxjs";
 import { Utilities } from "./settings";
 import { TileComponent } from "../tile/tile.component";
 
@@ -93,7 +93,13 @@ export class BoardMatrix  {
     this.BoardAccess.set('row8', this.GetRow(8));
   }
 
-
+  public PrintBoard(): void  {
+    console.log("PRINTING");
+    for (let i = 0; i < 8; i++)  {
+      console.log( this.GetRow(i + 1))
+    }
+    
+  }
 
   public GetRow(rowIdx: number): Tile[]  {
     if (rowIdx > 8)  {
