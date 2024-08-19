@@ -2,6 +2,7 @@ import { AfterViewChecked, AfterViewInit, Component, OnInit, ViewChild } from '@
 import { GameService } from '../game.service';
 import { TileComponent } from '../tile/tile.component';
 import {ClickRole, Piece, Tile} from '../models/game';
+import { Subject } from 'rxjs';
 
 
 
@@ -24,10 +25,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   onTileClick(component: TileComponent)  {
+
     const tilesClicked = this.game.tileClicks.$_TileClicks.getValue();
     const firstTile = tilesClicked[0] as TileComponent;
     const isSameClick = component.tile.index === firstTile?.tile?.index;
-    if (isSameClick) return this.neutralizeBoard();
+    if (isSameClick || (isSameClick && !component.isOccupied)) return this.neutralizeBoard();
     const tileClicks = (firstTile) ? [firstTile, component] as TileComponent[] : [component] as TileComponent[];
     this.game.tileClicks.$_TileClicks.next(tileClicks);
 
@@ -40,7 +42,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
     if (tileClicks.length === ClickRole.SECOND_CLICK)  {
       const fromTile = tileClicks[0];
       const toTile = tileClicks[1];
-      
+      const wantsToTake = toTile.isOccupied && (toTile.tile.currentlyOccupiedBy?.IsWhite !== fromTile.tile?.currentlyOccupiedBy);
       const validMove = this.currentlyHighlighted
         .map(t => t.index)
           .includes(toTile.tile.index) && !toTile.isOccupied;
@@ -50,11 +52,18 @@ export class BoardComponent implements OnInit, AfterViewInit {
       }
       this.neutralizeBoard();
     }
+
+
   }
 
-  neutralizeBoard()  {
+  neutralizeBoard(withSubjectPiece?: Piece)  {
+    let tile = undefined;
+    if (withSubjectPiece)  {
+       tile = this.game.board.BoardState.get(withSubjectPiece.CurrentPosition);
+    }
+    this.game.tilesUnderAttack.forEach(this.game.unhighlightUnderAttackTiles);
     this.highlightGridCells(this.game.SubjectPiece, this.currentlyHighlighted, true);
-    this.game.setSubjectPieceAndTile(undefined, new Tile());
+    this.game.setSubjectPieceAndTile(withSubjectPiece, tile);
     this.game.tileClicks.$_TileClicks.next([]);
   }
 
@@ -74,7 +83,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   highlightGridCells(currentPosition: Piece | undefined, cellsToHighlight: Tile[] | undefined, revert: boolean = false)  {
     if (!currentPosition)  { return; }
     if (!cellsToHighlight?.length) { return; }
-    debugger;
+
     const stringRefs = new Set(cellsToHighlight.map(tile => tile.index));
     for (const idx  of stringRefs)  {
         const tile = this.game.board.BoardState.get(idx) as Tile;

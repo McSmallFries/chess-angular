@@ -41,6 +41,7 @@ export class Piece implements Movable {
   FileName: string;
   CanMoveToTiles: Tile[];
   IsWhite: boolean;
+  IsUnderAttack: boolean;
   Range: number;
   Type: string;
 
@@ -54,6 +55,7 @@ export class Piece implements Movable {
     this.Type = attributes[0];
     this.IsWhite = attributes[1] === `white`
     this.Range = this.getRange();
+    this.IsUnderAttack = false;
   }
 
   move(nextIndex: string): boolean {
@@ -156,6 +158,14 @@ export class Tile  {
   setOccupation(newPiece: Piece)  {
     if (!this.currentlyOccupiedBy)  {
       this.currentlyOccupiedBy = newPiece;
+    }
+  }
+
+  static CopyFrom(tile: Tile | undefined): Tile  {
+    if (!tile)  {
+      return new Tile()
+    } else {
+      return tile;
     }
   }
 }

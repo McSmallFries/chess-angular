@@ -26,7 +26,7 @@
 }
 
 .tile-highlight-white  {
-  display: block;
+  display: block; /* display: block; */
   margin: auto auto;
   filter: blur(6px);
   background-color: rgba(146, 146, 146, 0.479);
@@ -35,10 +35,14 @@
 
 .tile-highlight-black  {
   display: block;
-  margin: auto auto;
+  margin: auto 20px;
   filter: blur(6px);
   background-color: rgba(146, 146, 146, 0.479);
   height:40px; width:40px; border-radius:50%;
+}
+
+.under-attack  {
+  background-color: gold;
 }
 
 .can-move-here-white {

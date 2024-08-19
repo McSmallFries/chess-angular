@@ -11,8 +11,9 @@ export class GameService {
   utils: Utilities = new Utilities();
   board: BoardMatrix;
   tileClicks: PlayerClicks;
+  tilesUnderAttack = new Array<Tile>();
   isWhitesTurn = true;
-  SubjectTile: Tile = new Tile();
+  SubjectTile: Tile | undefined;
   SubjectPiece: Piece | undefined;
 
   constructor() {
@@ -44,11 +45,11 @@ export class GameService {
         .push(...this.calculateAvailableMoves(this.SubjectTile.currentlyOccupiedBy as Piece) as Tile[]);
       this.SubjectPiece = this.SubjectTile.currentlyOccupiedBy;
 
-      this.board.PrintBoard();
+      this.board.PrintBoard(); // TODO remove.
     }
   }
 
-  public setSubjectPieceAndTile(piece: Piece | undefined, tile: Tile): void  {
+  public setSubjectPieceAndTile(piece: Piece | undefined, tile: Tile | undefined): void  {
     this.SubjectPiece = piece;
     this.SubjectTile = tile
   }
@@ -56,6 +57,15 @@ export class GameService {
   newGame() {
 
     this.putPiecesInDefaultPosition();
+  }
+
+  getTileFromMap(idx: string): Tile  {
+    const tile = this.board.BoardState.get(idx);
+    return tile ? tile : new Tile();
+  }
+
+  setTileInMap(tile: Tile)  {
+    this.board.BoardState.set(tile.index, tile);
   }
 
   putPiecesInDefaultPosition() {
@@ -139,14 +149,16 @@ export class GameService {
       nextTileIdx = this.getNextTile(nextTileIdx, direction);
       const nextTile = this.board.BoardState.get(nextTileIdx) as Tile;
       console.log("i = " + i + " nextTile = ", nextTile);
-      debugger;
       if ((!firstMove)) {
         canTake = this.checkPawnDiagonals(piece);
+        console.log("canTakeDiagonal: ", canTake);
       }
-      if (canTake && canTake?.length && (nextTile.currentlyOccupiedBy?.IsWhite != piece.IsWhite)) {
+      if (canTake && canTake?.length) { //  && (nextTile.currentlyOccupiedBy?.IsWhite != piece.IsWhite) <-- might not be necessary. might need to add back tho.
         const canTakeFoSho = canTake as Tile[]
+        canTakeFoSho.forEach(this.highlightUnderAttackTiles);
         validMoves.push(...canTakeFoSho);
-      } else if (nextTile.currentlyOccupiedBy?.IsWhite != piece.IsWhite) {
+      } 
+      if (nextTile.currentlyOccupiedBy?.IsWhite != piece.IsWhite) {
         validMoves.push(nextTile);
       }
     }
@@ -166,15 +178,32 @@ export class GameService {
 
     if (tileNE?.currentlyOccupiedBy) {
       const notBlockedBySelf = tileNE.currentlyOccupiedBy.IsWhite !== piece.IsWhite;
-      tiles.push(tileNE);
+      if (notBlockedBySelf)  {
+        tiles.push(tileNE);
+      }
     }
 
     if (tileNW?.currentlyOccupiedBy) {
       const notBlockedBySelf = tileNW.currentlyOccupiedBy.IsWhite !== piece.IsWhite;
-      tiles.push(tileNW);
+      if (notBlockedBySelf)  {
+        tiles.push(tileNW);
+      }
     }
 
     return tiles.length ? tiles : false;
+  }
+
+  highlightUnderAttackTiles = (value: Tile)  =>  {
+    const tile = this.board.BoardState.get(value.index) as Tile;
+    const piece = tile?.currentlyOccupiedBy as Piece;
+    this.tilesUnderAttack.push(tile);
+    piece.IsUnderAttack = true;
+  }
+
+  unhighlightUnderAttackTiles = (value: Tile) =>  {
+    const tile = this.board.BoardState.get(value.index);
+    const piece = tile?.currentlyOccupiedBy as Piece;
+    piece.IsUnderAttack = false;
   }
 
 }
