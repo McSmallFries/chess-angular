@@ -98,13 +98,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }
   }
 
-
-
   ngAfterViewInit(): void {
-
+    console.log("afterViewInit not implemented.") // TODO remove
   }
-
-
 
   ngOnInit(): void {
     this.rows = [];

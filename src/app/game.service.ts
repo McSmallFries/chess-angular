@@ -22,8 +22,6 @@ export class GameService {
     this.newGame();
   }
 
-
-
   handlePlayerClicks = (tiles: TileComponent[]) => {
     console.log("handling deez clicks", tiles);
     if (!tiles) { return; }
@@ -42,7 +40,8 @@ export class GameService {
 
     if (tiles.length === ClickRole.FIRST_CLICK) {
       this.SubjectTile = tiles[0].tile as Tile;
-      this.SubjectTile.currentlyOccupiedBy?.CanMoveToTiles.push(...this.calculateAvailableMoves(this.SubjectTile.currentlyOccupiedBy as Piece) as Tile[]);
+      this.SubjectTile.currentlyOccupiedBy?.CanMoveToTiles
+        .push(...this.calculateAvailableMoves(this.SubjectTile.currentlyOccupiedBy as Piece) as Tile[]);
       this.SubjectPiece = this.SubjectTile.currentlyOccupiedBy;
 
       this.board.PrintBoard();
@@ -53,8 +52,6 @@ export class GameService {
     this.SubjectPiece = piece;
     this.SubjectTile = tile
   }
-
-
 
   newGame() {
 
@@ -88,22 +85,16 @@ export class GameService {
     this.setTileOccupied('H1', new Piece("H1", "rook_white"));
   }
 
-
-
   removeTileOccupation(reference: string) {
     const tile = this.board.BoardState.get(reference) as Tile;
     tile.currentlyOccupiedBy = undefined;
   }
-
-
 
   setTileOccupied(reference: string, toBeOccupiedBy: Piece) {
     const tile = this.board.BoardState.get(reference) as Tile;
     tile.setOccupation(toBeOccupiedBy);
     this.board.BoardState.set(tile.index, tile)
   }
-
-
 
   getNextTile(index: string, direction: Direction, incrementor = 0) {
     const colMapper = Utilities.ALPHABET;
@@ -131,8 +122,6 @@ export class GameService {
     }
     return [];
   }
-
-
 
   calculatePawnMoves(piece: Piece) {
     const validMoves = new Array<Tile>();
@@ -164,8 +153,6 @@ export class GameService {
 
     return validMoves;
   }
-
-
 
   checkPawnDiagonals(piece: Piece): false | Tile[] {
     let tiles = [];

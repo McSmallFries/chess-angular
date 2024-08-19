@@ -41,7 +41,8 @@ export class TileComponent implements OnInit, AfterViewInit {
 
 
   ngAfterViewInit(): void {
-    /* Set DOM Element id to the chess Index */
+    /* Set DOM Element id to the chess Index */ 
+    /* Consider moving to ngOnInit. */
     this.thisTile.nativeElement.id = this.tile.index;
   }
 

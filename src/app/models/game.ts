@@ -28,8 +28,13 @@ export class PlayerClicks  {
     }
 }
 
+export interface Movable  {
 
-export class Piece  {
+  move(nextIndex: string): boolean;
+
+}
+
+export class Piece implements Movable {
   StartingPosition: string;
   CurrentPosition: string;
   PieceName: string;
@@ -49,6 +54,10 @@ export class Piece  {
     this.Type = attributes[0];
     this.IsWhite = attributes[1] === `white`
     this.Range = this.getRange();
+  }
+
+  move(nextIndex: string): boolean {
+    throw new Error("Method not implemented.");
   }
 
   getRange()  {
