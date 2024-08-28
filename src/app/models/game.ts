@@ -18,7 +18,9 @@ export enum Direction  {
   SOUTH_EAST = 7,
   SOUTH_WEST = 8,
   NONE = 9,
-  HORSEY = 10
+  HORSEY = 10,
+  CASTLE_KINGSIDE = 11,
+  CASTLE_QUEENSIDE
 }
 
 
@@ -42,6 +44,7 @@ export class Piece implements Movable {
   PieceName: string;
   FileName: string;
   CanMoveToTiles: Tile[];
+  CurrentlyAttacking: string[];
   IsWhite: boolean;
   IsUnderAttack: boolean;
   Range: number;
@@ -58,6 +61,7 @@ export class Piece implements Movable {
     this.IsWhite = attributes[1] === `white`
     this.Range = this.getRange();
     this.IsUnderAttack = false;
+    this.CurrentlyAttacking = [];
   }
 
   move(nextIndex: string): boolean {
@@ -93,6 +97,31 @@ export class Piece implements Movable {
       case 'knight': return [Direction.HORSEY]
       default: return [Direction.NONE] as number[];
     }
+  }
+}
+
+export class JsonAttack  {
+  perpetrator: string; // index: starting pos
+  victim: string; 
+  perpTile: string;
+  victimTile: string;
+
+  constructor(perp: string, victim: string, perpTile: string, victTile: string)  {
+    this.perpetrator = perp;
+    this.victim = victim;
+    this.perpTile = perpTile;
+    this.victimTile = victTile;
+  }
+
+  static AsString(m: JsonAttack): string  {
+    return JSON.stringify(m);
+  }
+
+  static AsObject(o: string): JsonAttack[]  {
+    const rowStr = o.split(", ");
+    let moves = new Array<JsonAttack>();
+    rowStr.forEach(r => moves.push(JSON.parse(r)));
+    return moves;
   }
 }
 
@@ -174,7 +203,67 @@ export class BoardMatrix  {
       fullString += existingMoves;
     }
     this.BoardMoves.set(pieceID, fullString)
-    console.log("fully: ", fullString);
+    console.log("full: ", fullString);
+  }
+
+  GetNextTile(index: string, direction: Direction)  {
+    const colMapper = Utilities.ALPHABET;
+    const colIdx = index[0];
+    const rowIdx = Number(index[1]);
+    console.log("clicked: ", index)
+    switch (direction) {
+      case Direction.NORTH: return colIdx + (rowIdx - 1).toString();
+      case Direction.SOUTH: return colIdx + (rowIdx + 1).toString();
+      case Direction.EAST: return colMapper[colMapper.indexOf(colIdx) + 1] + (rowIdx).toString();
+      case Direction.WEST: return colMapper[colMapper.indexOf(colIdx) - 1] + (rowIdx).toString();
+      case Direction.NORTH_EAST: return colMapper[colMapper.indexOf(colIdx) + 1] + (rowIdx - 1).toString();
+      case Direction.NORTH_WEST: return colMapper[colMapper.indexOf(colIdx) - 1] + (rowIdx - 1).toString();
+      case Direction.SOUTH_EAST: return colMapper[colMapper.indexOf(colIdx) + 1] + (rowIdx + 1).toString();
+      case Direction.SOUTH_WEST: return colMapper[colMapper.indexOf(colIdx) - 1] + (rowIdx + 1).toString();
+      default: return "";
+    }
+  }
+
+  GetPieceIsAttacking(piece: Piece): Tile[] | false {
+      switch (piece.Type)  {
+        case "pawn": {
+          return this.checkPawnDiagonals(piece)
+        };
+        case "king": return this.findKingIsAttacking(piece);
+        default: return false
+      }
+  }
+
+  private checkPawnDiagonals(piece: Piece)  {
+    let tiles = [];
+    const whiteDirections = [Direction.SOUTH_EAST, Direction.SOUTH_WEST];
+    const blackDirections = [Direction.NORTH_WEST, Direction.NORTH_EAST];
+    const directions = piece.IsWhite ? whiteDirections : blackDirections;
+    const potentialTakeLeft = this.GetNextTile(piece.CurrentPosition, directions[0]);
+    const potentialTakeRight = this.GetNextTile(piece.CurrentPosition, directions[1]);
+    const tileNE = this.BoardState.get(potentialTakeLeft);
+    const tileNW = this.BoardState.get(potentialTakeRight);
+
+    if (tileNE?.currentlyOccupiedBy) {
+      const notBlockedBySelf = tileNE.currentlyOccupiedBy.IsWhite !== piece.IsWhite;
+      if (notBlockedBySelf)  {
+        tiles.push(tileNE);
+      }
+    }
+
+    if (tileNW?.currentlyOccupiedBy) {
+      const notBlockedBySelf = tileNW.currentlyOccupiedBy.IsWhite !== piece.IsWhite;
+      if (notBlockedBySelf)  {
+        tiles.push(tileNW);
+      }
+    }
+
+    return tiles.length ? tiles : false;
+  }
+
+  private findKingIsAttacking(piece: Piece): Tile[] | false  {
+
+    return [];
   }
 
   public FindTileByPieceStartIndex(startIdx: string): Tile | undefined  {
