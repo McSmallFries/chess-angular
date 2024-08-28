@@ -60,6 +60,7 @@ export class GameService {
   newGame() {
 
     this.putPiecesInDefaultPosition();
+    this.declareAttacksOnFrontRow();
   }
 
   isTileStillUnderAttack(index: string)  {
@@ -74,6 +75,13 @@ export class GameService {
 
   setTileInMap(tile: Tile)  {
     this.board.BoardState.set(tile.index, tile);
+  }
+
+  declareAttacksOnFrontRow()  {
+    const whiteSide = this.board.BoardAccess.get('row3')?.map(t => t.index) as string[];
+    const blackSide = this.board.BoardAccess.get('row6')?.map(t => t.index) as string[];
+    this.WhiteTilesUnderAttack = blackSide;
+    this.BlackTilesUnderAttack = whiteSide;
   }
 
   putPiecesInDefaultPosition() {
