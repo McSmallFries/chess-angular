@@ -125,12 +125,49 @@ export class GameService {
   }
 
   calculateAvailableMoves(piece: Piece): Tile[] {
-    if (piece.Type === 'pawn') {
-      const a = this.calculatePawnMoves(piece);
-      console.log(a);
-      return a;
+    debugger;
+    switch (piece.Type) {
+      case 'pawn': {
+        const moves = this.calculatePawnMoves(piece);
+        console.log(moves);
+        return moves;
+      }
+      case 'king': {
+        const moves = this.calculateKingMoves(piece)
+        console.log("king moves", moves);
+        return moves;
+      }
     }
     return [];
+  }
+
+  calculateKingMoves(piece: Piece)  {
+    const validMoves = new Array<Tile>();
+    const directions = piece.GetDirections();
+
+    let nextTileIdx = piece.CurrentPosition;
+    let canTake;
+    for (let i = 0; i < piece.Range; i++)  {
+        let candidateTiles;
+        directions.forEach(direction => {
+          const idx = this.getNextTile(nextTileIdx, direction);
+          const nextTile = this.board.BoardState.get(idx);
+          const nextPiece = nextTile?.currentlyOccupiedBy;
+          const isNextOccupied = !!nextPiece;
+          const isNextUnderAttack = false;
+          const canCastle = false;
+
+          if (!nextTile)  {
+              return;
+          }
+          if (!nextPiece)  {
+            candidateTiles.push(nextTile)
+          }
+          // if (canCastle)
+        });
+
+    }
+    return validMoves;
   }
 
   calculatePawnMoves(piece: Piece) {
@@ -142,11 +179,11 @@ export class GameService {
     } else {
       piece.Range = 1;
     }
-    const direction = piece.IsWhite ? Direction.SOUTH : Direction.NORTH;
+    const direction = piece.GetDirections();
     let nextTileIdx = piece.CurrentPosition;
     let canTake;
     for (let i = 0; i < piece.Range; i++) {
-      nextTileIdx = this.getNextTile(nextTileIdx, direction);
+      nextTileIdx = this.getNextTile(nextTileIdx, direction[0]);
       const nextTile = this.board.BoardState.get(nextTileIdx) as Tile;
       console.log("i = " + i + " nextTile = ", nextTile);
       if ((!firstMove)) {
@@ -197,13 +234,16 @@ export class GameService {
     const tile = this.board.BoardState.get(value.index) as Tile;
     const piece = tile?.currentlyOccupiedBy as Piece;
     this.tilesUnderAttack.push(tile);
+    tile.isHighlighted = true;
     piece.IsUnderAttack = true;
   }
 
   unhighlightUnderAttackTiles = (value: Tile) =>  {
-    const tile = this.board.BoardState.get(value.index);
+    const tile = this.board.BoardState.get(value.index) as Tile;
     const piece = tile?.currentlyOccupiedBy as Piece;
     piece.IsUnderAttack = false;
+    tile.isHighlighted = false;
+    this.tilesUnderAttack = [];
   }
 
 }

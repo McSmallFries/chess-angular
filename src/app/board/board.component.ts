@@ -43,11 +43,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
       const fromTile = tileClicks[0];
       const toTile = tileClicks[1];
       const wantsToTake = toTile.isOccupied && (toTile.tile.currentlyOccupiedBy?.IsWhite !== fromTile.tile?.currentlyOccupiedBy);
+      const isBlockedBySelf = toTile.tile.currentlyOccupiedBy?.IsWhite !== fromTile.tile.currentlyOccupiedBy?.IsWhite;
       const validMove = this.currentlyHighlighted
         .map(t => t.index)
-          .includes(toTile.tile.index) && !toTile.isOccupied;
+          .includes(toTile.tile.index) && isBlockedBySelf;
           
-      if (validMove)  {
+      if (validMove && !wantsToTake)  {
+        this.movePieceToTile(fromTile, toTile);
+      } else if (validMove && wantsToTake)  {
         this.movePieceToTile(fromTile, toTile);
       }
       this.neutralizeBoard();
@@ -68,6 +71,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   movePieceToTile(fromTile: TileComponent, toTile: TileComponent)  {
+      const takenPiece = toTile.tile.currentlyOccupiedBy?.FileName
+      this.game.board.StoreMove(this.game.SubjectPiece as Piece, fromTile.tile, toTile.tile, takenPiece);
       this.game.SubjectPiece!.CanMoveToTiles = new Array<Tile>();
       this.game.SubjectPiece!.CurrentPosition = toTile.tile.index;
       toTile.optionalImageSource = fromTile.optionalImageSource;

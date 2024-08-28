@@ -16,7 +16,9 @@ export enum Direction  {
   NORTH_WEST = 5,
   NORTH_EAST = 6,
   SOUTH_EAST = 7,
-  SOUTH_WEST = 8
+  SOUTH_WEST = 8,
+  NONE = 9,
+  HORSEY = 10
 }
 
 
@@ -73,16 +75,63 @@ export class Piece implements Movable {
       default: return 0;
     }
   }
+
+  GetDirections(): Direction[] {
+    switch(this.Type)  {
+      case 'king': return [
+        Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST,
+        Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST
+      ] as number[];
+      case 'queen':return [
+        Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST,
+        Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST
+      ] as number[];
+
+      case 'pawn': return this.IsWhite ? [Direction.SOUTH] : [Direction.NORTH];
+      case 'bishop':return [Direction.NORTH_EAST, Direction.NORTH_WEST, Direction.SOUTH_EAST, Direction.SOUTH_WEST];
+      case 'rook': return [Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST];
+      case 'knight': return [Direction.HORSEY]
+      default: return [Direction.NONE] as number[];
+    }
+  }
 }
 
+export class JsonMove  {
+  pieceID: string;
+  pieceColor: string;
+  movedFrom: string;
+  movedTo: string;
+  takenPiece: string;
+
+  constructor(id: string, color: string, from: string, to: string, captured: string)  {
+    this.pieceID = id;
+    this.pieceColor = color;
+    this.movedFrom = from;
+    this.movedTo = to;
+    this.takenPiece = captured
+  }
+
+  static AsString(m: JsonMove): string  {
+    return JSON.stringify(m);
+  }
+
+  static AsObject(o: string): JsonMove[]  {
+    const rowStr = o.split(", ");
+    let moves = new Array<JsonMove>();
+    rowStr.forEach(r => moves.push(JSON.parse(r)));
+    return moves;
+  }
+}
 
 export class BoardMatrix  {
 
   BoardState: Map<string, Tile>;
   BoardAccess: Map<string, Tile[]>;
+  BoardMoves: Map<string, string>;
 
   constructor()  {
     this.BoardState = new Map<string, Tile>();
+    this.BoardMoves = new Map<string, string>();
     this.BoardAccess = new Map<string, Tile[]>();
     for (let cols = 1; cols < 9; cols++)  {
       const letter = Utilities.ALPHABET[cols - 1];
@@ -110,6 +159,37 @@ export class BoardMatrix  {
       console.log( this.GetRow(i + 1))
     }
     
+  }
+
+  public StoreMove(piece: Piece, fromTile: Tile, toTile: Tile, takenPiece = ""): void  {
+    if (!piece) return;
+    const pieceID = piece.StartingPosition;
+    const pieceColor = piece.IsWhite ? "Wh_" : "Bl_";
+    const movedFrom = fromTile.index;
+    const movedTo = toTile.index;
+    const move = new JsonMove(pieceID, pieceColor, movedFrom, movedTo, takenPiece);
+    let fullString = JSON.stringify(move);
+    let existingMoves = this.BoardMoves.get(pieceID);
+    if (existingMoves)  {
+      fullString += existingMoves;
+    }
+    this.BoardMoves.set(pieceID, fullString)
+    console.log("fully: ", fullString);
+  }
+
+  public FindTileByPieceStartIndex(startIdx: string): Tile | undefined  {
+      const movesStr = this.BoardMoves.get(startIdx);
+      if (!movesStr)  {
+        return this.BoardState.get(startIdx)
+      }
+      const moves = JsonMove.AsObject(movesStr);
+      const latestMove = moves[0];
+      const isCorrectTile = latestMove.pieceID === startIdx;
+      const found = this.BoardState.get(latestMove.movedTo);
+      if (isCorrectTile && found)  {
+        return found;
+      }
+      return undefined;
   }
 
   public GetRow(rowIdx: number): Tile[]  {
