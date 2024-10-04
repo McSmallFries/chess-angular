@@ -60,7 +60,6 @@ export class GameService {
   newGame() {
 
     this.putPiecesInDefaultPosition();
-    this.declareAttacksOnFrontRow();
   }
 
   isTileStillUnderAttack(index: string)  {
@@ -77,24 +76,30 @@ export class GameService {
     this.board.BoardState.set(tile.index, tile);
   }
 
-  declareAttacksOnFrontRow()  {
-    const whiteSide = this.board.BoardAccess.get('row3')?.map(t => t.index) as string[];
-    const blackSide = this.board.BoardAccess.get('row6')?.map(t => t.index) as string[];
-    this.WhiteTilesUnderAttack = blackSide;
-    this.BlackTilesUnderAttack = whiteSide;
-  }
+  // declareAttacksOnFrontRow()  {
+  //   const whiteSide = this.board.BoardAccess.get('row3')?.map(t => t.index) as string[];
+  //   const blackSide = this.board.BoardAccess.get('row6')?.map(t => t.index) as string[];
+  //   this.WhiteTilesUnderAttack = blackSide;
+  //   this.BlackTilesUnderAttack = whiteSide;
+  // }
 
   putPiecesInDefaultPosition() {
     const whitePawnRow = this.board.GetRow(2) as Tile[];
     const blackPawnRow = this.board.GetRow(7) as Tile[];
     for (let tile of whitePawnRow) {
-      this.setTileOccupied(tile.index, new Piece(tile.index, 'pawn_white'));
+      const pc = new Piece(tile.index, 'pawn_white');
+      pc.CurrentlyAttacking = this.board.CheckPawnDiagonals(pc, false).map(t => t.index);
+      //this.BlackTilesUnderAttack.push(...pc.CurrentlyAttacking);
+      this.setTileOccupied(tile.index, pc);
     }
     for (let tile of blackPawnRow) {
-      this.setTileOccupied(tile.index, new Piece(tile.index, 'pawn_black'));
+      const pc = new Piece(tile.index, 'pawn_black');
+      pc.CurrentlyAttacking = this.board.CheckPawnDiagonals(pc, false).map(t => t.index);
+      // this.WhiteTilesUnderAttack.push(...pc.CurrentlyAttacking);
+      this.setTileOccupied(tile.index, pc);
     }
     this.setTileOccupied('A8', new Piece("A8", "rook_black"));
-    this.setTileOccupied('B8', new Piece("B8", "knight_black"));
+    this.setTileOccupied('B8', new Piece("B8", "knight_black")); // TODO call calculate functions
     this.setTileOccupied('C8', new Piece("C8", "bishop_black"));
     this.setTileOccupied('D8', new Piece("D8", "king_black"));
     this.setTileOccupied('E8', new Piece("E8", "queen_black"));
@@ -116,6 +121,7 @@ export class GameService {
     tile.currentlyOccupiedBy = undefined;
   }
 
+
   setTileOccupied(reference: string, toBeOccupiedBy: Piece) {
     const tile = this.board.BoardState.get(reference) as Tile;
     tile.setOccupation(toBeOccupiedBy);
@@ -126,6 +132,14 @@ export class GameService {
     return this.board.GetNextTile(index, direction);
   }
 
+  pushUnderAttack(isWhite: boolean, value: string[])  {
+    if (isWhite)  {
+      this.WhiteTilesUnderAttack = value;
+    } else  {
+      this.BlackTilesUnderAttack = value;
+    }
+  }
+
   getTilesUnderAttack(isWhite: boolean)  {
     if (isWhite)  {
       return this.WhiteTilesUnderAttack;
@@ -133,11 +147,20 @@ export class GameService {
     return this.BlackTilesUnderAttack;
   }
 
+  initializeCurrentlyAttacking()  {
+
+  }
+
   calculateAvailableMoves(piece: Piece): Tile[] {
-    debugger;
+    // this.UpdateCurrentlyAttacking(piece.CurrentPosition);
     switch (piece.Type) {
       case 'pawn': {
         const moves = this.calculatePawnMoves(piece);
+        console.log(moves);
+        return moves;
+      }
+      case 'bishop': {
+        const moves = this.calculateBishopMove(piece);
         console.log(moves);
         return moves;
       }
@@ -150,11 +173,13 @@ export class GameService {
     return [];
   }
 
+
   calculateKingMoves(piece: Piece)  {
     let nextTileIdx = piece.CurrentPosition;
     const validMoves = new Array<Tile>();
     const directions = piece.GetDirections();
     const tilesUnderAttack = this.getTilesUnderAttack(piece.IsWhite);
+    const currentlyAttacking: string[] = piece.CurrentlyAttacking;
     const isInCheck = tilesUnderAttack.find(s => s == nextTileIdx);
     const canCastle = false;
     let canTake;
@@ -173,9 +198,15 @@ export class GameService {
               return;
           }
           if (!isNextOccupied)  {
-            candidateTiles.push(nextTile)
+            candidateTiles.push(nextTile);
+          } else {
+            const isBlockedBySelf = nextPiece!.IsWhite === piece.IsWhite;
+            if (isBlockedBySelf) return;
+            currentlyAttacking.push(nextTile.index);
+            candidateTiles.push(nextTile);
           }
         });
+        
         if (canCastle)  {
           const castleKing = this.getNextTile(piece.StartingPosition, Direction.CASTLE_KINGSIDE);
           const castleQueen = this.getNextTile(piece.StartingPosition, Direction.CASTLE_QUEENSIDE);
@@ -185,7 +216,9 @@ export class GameService {
           // filter moves that dont remove check
         }
     }
-    validMoves.push(...candidateTiles);
+    
+    validMoves.push(...candidateTiles.filter(t => !tilesUnderAttack.find(s => t.index === s)));
+    this.DeclareAttack(piece.CurrentPosition, validMoves.map(t => t.index));
     return validMoves;
   }
 
@@ -205,16 +238,14 @@ export class GameService {
       nextTileIdx = this.getNextTile(nextTileIdx, direction[0]);
       const nextTile = this.board.BoardState.get(nextTileIdx) as Tile;
       console.log("i = " + i + " nextTile = ", nextTile);
-      if ((!firstMove)) {
-        canTake = this.board.GetPieceIsAttacking(piece);
-        console.log("canTakeDiagonal: ", canTake);
-      }
+      canTake = this.board.GetPieceIsAttacking(piece);
+      console.log("canTakeDiagonal: ", canTake);
+      
       if (canTake && canTake?.length) { //  && (nextTile.currentlyOccupiedBy?.IsWhite != piece.IsWhite) <-- might not be necessary. might need to add back tho.
         const canTakeFoSho = canTake as Tile[]
         canTakeFoSho.forEach(this.highlightUnderAttackTiles);
         validMoves.push(...canTakeFoSho);
-        const indexes = canTakeFoSho.map(t => t.index);
-        this.DeclareAttack(piece.CurrentPosition, indexes);
+        this.DeclareAttack(piece.CurrentPosition, this.board.CheckPawnDiagonals(piece, false).map(t => t.index));
       } 
       if (nextTile.currentlyOccupiedBy?.IsWhite != piece.IsWhite) {
         validMoves.push(nextTile);
@@ -224,26 +255,89 @@ export class GameService {
     return validMoves;
   }
 
+  calculateBishopMove(piece: Piece): Tile[]  {
+    const validMoves = new Array<Tile>();
+    const directions = piece.GetDirections();
+    const tilesUnderAttack = this.getTilesUnderAttack(piece.IsWhite);
+    const initialIdx = piece.CurrentPosition
+    let nextTileIdx = initialIdx;
+    let canTake = [];
+    directions.forEach(direction => {
+      for (let i = 0; i < piece.Range; i++) {
+        const idx = this.getNextTile(nextTileIdx, direction);
+        const nextTile = this.board.BoardState.get(idx);
+        const nextPiece = nextTile?.currentlyOccupiedBy;
+        const isNextOccupied = !!nextPiece;
+        const isNextUnderAttack = tilesUnderAttack.find(s => s == idx);
+        if (!nextTile)  {
+            nextTileIdx = initialIdx;
+            return;
+        }
+        if (!isNextOccupied)  {
+          validMoves.push(nextTile);
+        } else {
+          const isBlockedBySelf = nextPiece!.IsWhite === piece.IsWhite;
+          if (isBlockedBySelf) return;
+          canTake.push(nextTile.index);
+          validMoves.push(nextTile);
+        }
+        nextTileIdx = idx;
+      }
+    });
+    return validMoves;
+  }
+
+  SetPieceInMap(tileIdx: string, toValue: Piece)  {
+    const tile = this.board.BoardState.get(tileIdx) as Tile;
+    if (tile && tile.index === toValue.CurrentPosition)  {
+      tile.currentlyOccupiedBy = toValue;
+      this.board.BoardState.set(tileIdx, tile);
+    }
+  }
+
   DeclareAttack(perpIdx: string, victimsIdxs: string[])  {
     const perpetrator = this.board.BoardState.get(perpIdx)?.currentlyOccupiedBy;
+    perpetrator!.CurrentlyAttacking = new Array<string>(...victimsIdxs);
     for (let i = 0; i < victimsIdxs.length; i++)  {
       const idx = victimsIdxs[i];
-      if (perpetrator?.IsWhite)  {
-        this.BlackTilesUnderAttack.push(idx)
-      } else if (!perpetrator?.IsWhite)  {
-        this.WhiteTilesUnderAttack.push(idx);
-      }
+      // if (perpetrator?.IsWhite)  {
+      //   this.BlackTilesUnderAttack.push(idx);
+      // } else if (!perpetrator?.IsWhite)  {
+      //   this.WhiteTilesUnderAttack.push(idx);
+      // }
     }
+    this.SetPieceInMap(perpIdx, perpetrator as Piece);
+  }
+
+// UpdateCurrentlyAttacking(perpIdx: string)  {
+//     const piece = this.getTileFromMap(perpIdx).currentlyOccupiedBy as Piece;
+//     if (piece)  {
+//       const currentlyAttacking = this.getTilesUnderAttack(!piece.IsWhite);
+//       currentlyAttacking.forEach(idx => {
+//         const foundAt = piece.CurrentlyAttacking.findIndex(s => s === idx);
+//         if (foundAt)  {
+//           piece.CurrentlyAttacking = piece.CurrentlyAttacking.splice(foundAt, 1);
+//           const newFoundAt = currentlyAttacking.findIndex(s => s === idx)
+//           if (!newFoundAt) return;
+//           this.setTilesUnderAttack(!piece.IsWhite, currentlyAttacking.splice(newFoundAt, 1)); 
+//         }
+//       });
+//       piece.CurrentlyAttacking = this.GetAttackOf(piece);
+//       this.SetPieceInMap(perpIdx, piece);
+//     }
+//   }
+
+  GetAttackOf(piece: Piece)  {
+    switch(piece.Type) {
+      case "pawn": return this.board.CheckPawnDiagonals(piece).map(t => t.index);
+      case "king": return this.calculateKingMoves(piece).map(t => t.index);
+    }
+    return [];
   }
 
   highlightUnderAttackTiles = (value: Tile)  =>  {
     const tile = this.board.BoardState.get(value.index) as Tile;
     const piece = tile?.currentlyOccupiedBy as Piece;
-    if (piece.IsWhite)  {
-      this.WhiteTilesUnderAttack.push(tile.index);
-    } else if (!piece.IsWhite)  {
-      this.BlackTilesUnderAttack.push(tile.index);
-    }
     this.tilesUnderAttack.push(tile);
     tile.isHighlighted = true;
     piece.IsUnderAttack = true;

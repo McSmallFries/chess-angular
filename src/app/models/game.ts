@@ -20,7 +20,7 @@ export enum Direction  {
   NONE = 9,
   HORSEY = 10,
   CASTLE_KINGSIDE = 11,
-  CASTLE_QUEENSIDE
+  CASTLE_QUEENSIDE = 12
 }
 
 
@@ -68,11 +68,23 @@ export class Piece implements Movable {
     throw new Error("Method not implemented.");
   }
 
+  getStartingAttacks(piece: Piece, fn: (piece: Piece) => Tile[])  {
+    switch(this.Type)  {
+      case 'pawn':
+      case 'knight':
+      case 'king':
+      case 'bishop':
+      case 'queen':
+      case 'rook': return fn;
+      default: return [];
+    }
+  }
+
   getRange()  {
     switch(this.Type)  {
       case 'king':
       case 'pawn': return 1;
-      case 'bishop':
+      case 'bishop': return 8;
       case 'queen':
       case 'rook': return 8;
       case 'knight': return 3;
@@ -227,14 +239,14 @@ export class BoardMatrix  {
   GetPieceIsAttacking(piece: Piece): Tile[] | false {
       switch (piece.Type)  {
         case "pawn": {
-          return this.checkPawnDiagonals(piece)
+          return this.CheckPawnDiagonals(piece);
         };
         case "king": return this.findKingIsAttacking(piece);
         default: return false
       }
   }
 
-  private checkPawnDiagonals(piece: Piece)  {
+  CheckPawnDiagonals(piece: Piece, requireEnemyOccupation = true)  {
     let tiles = [];
     const whiteDirections = [Direction.SOUTH_EAST, Direction.SOUTH_WEST];
     const blackDirections = [Direction.NORTH_WEST, Direction.NORTH_EAST];
@@ -243,22 +255,31 @@ export class BoardMatrix  {
     const potentialTakeRight = this.GetNextTile(piece.CurrentPosition, directions[1]);
     const tileNE = this.BoardState.get(potentialTakeLeft);
     const tileNW = this.BoardState.get(potentialTakeRight);
+    if (!requireEnemyOccupation)  {
+       if (tileNE)  {
+        tiles.push(tileNE);
+       }
+       if (tileNW)  {
+        tiles.push(tileNW);
+       }
+       return tiles;
+    }
 
     if (tileNE?.currentlyOccupiedBy) {
-      const notBlockedBySelf = tileNE.currentlyOccupiedBy.IsWhite !== piece.IsWhite;
-      if (notBlockedBySelf)  {
+      const blockedBySelf = tileNE.currentlyOccupiedBy.IsWhite === piece.IsWhite;
+      if (!blockedBySelf)  {
         tiles.push(tileNE);
       }
     }
 
     if (tileNW?.currentlyOccupiedBy) {
-      const notBlockedBySelf = tileNW.currentlyOccupiedBy.IsWhite !== piece.IsWhite;
-      if (notBlockedBySelf)  {
+      const blockedBySelf = tileNW.currentlyOccupiedBy.IsWhite === piece.IsWhite;
+      if (!blockedBySelf)  {
         tiles.push(tileNW);
       }
     }
 
-    return tiles.length ? tiles : false;
+    return tiles.length ? tiles : [];
   }
 
   private findKingIsAttacking(piece: Piece): Tile[] | false  {
@@ -266,7 +287,7 @@ export class BoardMatrix  {
     return [];
   }
 
-  public FindTileByPieceStartIndex(startIdx: string): Tile | undefined  {
+  public FindCurrentTileByPieceStartIndex(startIdx: string): Tile | undefined  {
       const movesStr = this.BoardMoves.get(startIdx);
       if (!movesStr)  {
         return this.BoardState.get(startIdx)

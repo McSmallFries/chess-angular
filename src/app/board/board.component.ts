@@ -71,7 +71,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   movePieceToTile(fromTile: TileComponent, toTile: TileComponent)  {
-      const takenPiece = toTile.tile.currentlyOccupiedBy?.FileName
+      const takenPiece = toTile.tile.currentlyOccupiedBy?.PieceName
       this.game.board.StoreMove(this.game.SubjectPiece as Piece, fromTile.tile, toTile.tile, takenPiece);
       this.game.SubjectPiece!.CanMoveToTiles = new Array<Tile>();
       this.game.SubjectPiece!.CurrentPosition = toTile.tile.index;

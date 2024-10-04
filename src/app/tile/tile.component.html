@@ -1,9 +1,10 @@
 <div #thisTile *ngIf="tile.isWhite" class="ui-tile-white" [ngClass]="{'under-attack' : tile.currentlyOccupiedBy?.IsUnderAttack}" (click)="onTileClick(thisTile)">
+  <!-- <p  style="color: black;">{{ tile.index }}</p> -->
   <img *ngIf="isOccupied" [src]="optionalImageSource" class="center">
   <div *ngIf="tile.isHighlighted" class="tile-highlight-white"></div>
 </div>
 <div #thisTile *ngIf="!tile.isWhite" class="ui-tile-black" [ngClass]="{'under-attack' : tile.currentlyOccupiedBy?.IsUnderAttack}" (click)="onTileClick(thisTile)">
-  
+  <!-- <p style="color: white;">{{ tile.index }}</p> -->
   <img *ngIf="isOccupied" [src]="optionalImageSource" class="center">
   <div *ngIf="tile.isHighlighted" class="tile-highlight-black"></div>
 </div>
