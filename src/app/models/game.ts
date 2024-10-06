@@ -1,6 +1,7 @@
 import { BehaviorSubject, of } from "rxjs";
 import { Utilities } from "./settings";
 import { TileComponent } from "../tile/tile.component";
+import { GameService } from "../game.service";
 
 export enum ClickRole  {
   FIRST_CLICK = 1,
@@ -161,6 +162,11 @@ export class JsonMove  {
     let moves = new Array<JsonMove>();
     rowStr.forEach(r => moves.push(JSON.parse(r)));
     return moves;
+  }
+
+  static ConvertFromNotationToJsonMove(notation: string): JsonMove  {
+
+    return {} as JsonMove;
   }
 }
 
@@ -360,3 +366,32 @@ export class Tile  {
   }
 }
 
+export class OnlineGame  {
+  // make a http method that uses this to find the 
+  // stored game on the server and load game
+  //  info based on these values.
+  gameId: string = ''; 
+  lobbyId: string = '';
+}
+
+export class ChessGame  {
+
+}
+
+export class Host  {
+  id: number = 0;
+  ipAddress: string = '';
+}
+
+export class Lobby {
+  host: Host = {} as Host;
+  isFull: boolean = false;
+  inProgress: boolean = false; 
+  player1: Player = {} as Player;
+  player2: Player = {} as Player;
+}
+
+export class Player  {
+  id: number = 0;
+  name: string = '';
+}

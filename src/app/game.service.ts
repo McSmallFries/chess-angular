@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { BoardMatrix, ClickRole, Direction, Piece, PlayerClicks, Tile } from './models/game';
 import { Utilities } from './models/settings';
 import { TileComponent } from './tile/tile.component';
-
+import { HttpClient } from '@angular/common/http'
+import { WebClientService } from './webclient.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -19,14 +20,27 @@ export class GameService {
   SubjectTile: Tile | undefined;
   SubjectPiece: Piece | undefined;
 
-  constructor() {
+constructor(private client: WebClientService) {
     this.board = new BoardMatrix();
     this.tileClicks = new PlayerClicks();
     this.tileClicks.$_TileClicks.subscribe(this.handlePlayerClicks);
     this.newGame();
   }
 
+  GetAllValidMovesString(): Promise<string>  {
+    const moves = this.client.GetAllValidMovesString();
+    return Promise.resolve(moves);
+  }
+
   handlePlayerClicks = (tiles: TileComponent[]) => {
+    this.client.HelloWorld();
+    // still check if first or second click
+
+    // click 1: request for all of player's available pieces,
+    // valid moves, thru websocket 
+    
+    // click 2: check if was loaded into clickedPiece's
+    // canMoveTo array.
     console.log("handling deez clicks", tiles);
     if (!tiles) { return; }
     if (tiles.length > 2) {
