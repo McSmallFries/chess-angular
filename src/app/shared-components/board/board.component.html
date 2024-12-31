@@ -1,5 +1,10 @@
-<div #uiBoardRoot id="board">
-  <div *ngFor="let row of rows" class="row">
-    <app-tile #thisTile *ngFor="let tile of row" [tile]="tile" (tileClick)="onTileClick(thisTile)"></app-tile>
+<div #uiBoardRoot id="board" style="
+max-width: 745px;
+width: 745px;
+">
+  <div id="board-inner">
+    <div *ngFor="let row of rows" class="chess-row">
+      <app-tile #thisTile *ngFor="let tile of row" [tile]="tile" (tileClick)="onTileClick(thisTile)"></app-tile>
+    </div>
   </div>
 </div>
