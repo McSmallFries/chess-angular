@@ -1,0 +1,29 @@
+#board {
+  height: 745px;
+  width: 745px;
+  max-width: 745px;
+  min-width: 745px;;
+  box-shadow: 0 16px 64px 0 rgba(244, 244, 244, 0.5), 1px 36px 200px 1px rgba(222, 222, 222, 0.4);
+  margin: 15px;
+  margin-bottom: 200px;
+}
+
+#board-inner  {
+  width: 745px;
+  padding-left:12px;
+  border-radius: 6px;;
+  padding-top: 0;
+  border-top: 15px solid #ffc800;
+  border-bottom:15px solid #ff8800;
+  background-image: 
+      linear-gradient(#ffc800, #ff8800),
+      linear-gradient(#ffc800, #ff8800)
+  ;
+  background-size:15px 100%;
+  background-position:0 0, 100% 0;
+  background-repeat:no-repeat;
+}
+
+.chess-row  {
+  display: flex;
+}

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BoardMatrix, ClickRole, Direction, Piece, PlayerClicks, Tile } from './models/game';
-import { Utilities } from './models/settings';
-import { TileComponent } from './tile/tile.component';
+import { BoardMatrix, ClickRole, Direction, Piece, Player, PlayerClicks, Tile } from '../models/game';
+import { Utilities } from '../models/settings';
+import { TileComponent } from '../shared-components/tile/tile.component';
 import { HttpClient } from '@angular/common/http'
 import { WebClientService } from './webclient.service';
 @Injectable({
@@ -365,5 +365,11 @@ constructor(private client: WebClientService) {
     this.tilesUnderAttack = [];
   }
 
+  async DoStuff()  {
+    const p = new Player()
+    p.id = 0;
+    p.name = "JohnD0e"
+    await this.client.JoinLobby(p)
+  }
 }
 

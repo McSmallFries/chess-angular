@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { GameService } from './game.service';
+import { Router } from '@angular/router';
+import { AppGlobalService } from './services/globals.service';
 
 @Component({
   selector: 'app-root',
@@ -9,10 +10,19 @@ import { GameService } from './game.service';
 export class AppComponent implements OnInit {
   title = 'chess-angular';
 
-  constructor(private game: GameService)  {
+  constructor(private globals: AppGlobalService, private router: Router)  {
 
   }
   ngOnInit()  {
-    
+    debugger;
+    this.globals.setIsUserLoggedIn(localStorage.getItem('isLoggedIn') === 'true')
+    if (this.globals.isUserLoggedIn)  {
+      this.router.navigate(['/dashboard']);
+      return;
+    } 
+    else {
+      this.router.navigate(['/register']);
+      return;
+    }
   }
 }

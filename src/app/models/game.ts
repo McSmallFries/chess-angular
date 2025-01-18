@@ -1,7 +1,7 @@
 import { BehaviorSubject, of } from "rxjs";
 import { Utilities } from "./settings";
-import { TileComponent } from "../tile/tile.component";
-import { GameService } from "../game.service";
+import { TileComponent } from "../shared-components/tile/tile.component";
+import { GameService } from "../services/game.service";
 
 export enum ClickRole  {
   FIRST_CLICK = 1,
@@ -369,7 +369,7 @@ export class Tile  {
 export class OnlineGame  {
   // make a http method that uses this to find the 
   // stored game on the server and load game
-  //  info based on these values.
+  // info based on these values.
   gameId: string = ''; 
   lobbyId: string = '';
 }

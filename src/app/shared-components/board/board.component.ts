@@ -1,7 +1,7 @@
 import { AfterViewChecked, AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { GameService } from '../game.service';
+import { GameService } from '../../services/game.service';
 import { TileComponent } from '../tile/tile.component';
-import {ClickRole, Piece, Tile} from '../models/game';
+import {ClickRole, Piece, Tile} from '../../models/game';
 import { Subject } from 'rxjs';
 
 
@@ -11,7 +11,6 @@ import { Subject } from 'rxjs';
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css'],
 })
-
 export class BoardComponent implements OnInit, AfterViewInit {
 
   @ViewChild('uiBoardRoot') uiBoardRoot: HTMLTableElement | undefined;
@@ -25,7 +24,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   onTileClick(component: TileComponent)  {
-
+    this.game.DoStuff();
     const tilesClicked = this.game.tileClicks.$_TileClicks.getValue();
     const firstTile = tilesClicked[0] as TileComponent;
     const isSameClick = component.tile.index === firstTile?.tile?.index;

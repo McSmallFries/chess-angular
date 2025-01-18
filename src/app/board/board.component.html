@@ -1,5 +1,0 @@
-<div #uiBoardRoot id="board">
-  <div *ngFor="let row of rows" class="row">
-    <app-tile #thisTile *ngFor="let tile of row" [tile]="tile" (tileClick)="onTileClick(thisTile)"></app-tile>
-  </div>
-</div>

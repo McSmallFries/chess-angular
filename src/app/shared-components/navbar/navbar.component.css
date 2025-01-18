@@ -1,0 +1,22 @@
+.mx-10  {
+    margin-right: 25px;
+    margin-left: 5px;
+}
+
+.nav-link  {
+    color: white;
+}
+
+.disabled  {
+    color: rgb(157, 157, 157);
+}
+
+.bg-dark  {
+    background-image: linear-gradient(180deg, rgb(50, 50, 50), rgb(50, 50, 50));
+    box-shadow: 0 2px 2px 2px rgb(57, 57, 57);
+}
+
+#nav-search-input::placeholder {
+        color: rgb(136, 135, 135);
+        opacity: 1; /* Firefox */
+      }

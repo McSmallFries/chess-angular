@@ -1,12 +1,11 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Tile } from '../models/game';
+import { Tile } from '../../models/game';
 
 @Component({
   selector: 'app-tile',
   templateUrl: './tile.component.html',
   styleUrls: ['./tile.component.css']
 })
-
 export class TileComponent implements OnInit, AfterViewInit {
 
   @ViewChild('thisTile') thisTile: any;
