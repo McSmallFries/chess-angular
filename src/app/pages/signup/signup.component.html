@@ -1,0 +1,19 @@
+
+<div class="signup">
+    <h1 class="signup-title" style="text-align: center; display: block; bottom:0;">Sign Up</h1>
+    <form class="signup-body" style="position: relative;">
+      <label>
+        <input type="email" [(ngModel)]="txtEmail" [ngModelOptions]="{standalone: true}" placeholder="Email">
+        <span>Email</span>
+      </label>
+      <label>
+        <input id="fname" [(ngModel)]="txtUsername" [ngModelOptions]="{standalone: true}" type="text" placeholder="Name">
+        <span>Name</span>
+      </label>
+      <label>
+        <input id="fpassword" [(ngModel)]="txtPassword" [ngModelOptions]="{standalone: true}" type="password" placeholder="Password">
+        <span>Password</span>
+      </label>
+      <input type="submit" value="Send" (click)="onSubmit($event)" >
+    </form>
+</div>

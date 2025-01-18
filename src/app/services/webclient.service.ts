@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { webSocket } from 'rxjs/webSocket';
-import { Player } from './models/game';
+import { Player } from '../models/game';
+import { LoginRequest, User, UserPassword } from '../models/web';
 @Injectable({
   providedIn: 'root'
 })
@@ -25,6 +26,16 @@ export class WebClientService {
       const meep = await this.http.get(this.url + '/hello').toPromise();
       console.log(meep)
       console.log("should be doneee")
+    }
+
+    async Login(req: LoginRequest): Promise<User>  {
+      const resp = await this.http.post(this.url + '/user/login', req, {});
+      return Promise.resolve(new User("", ""));
+    }
+
+    async Register(req: LoginRequest): Promise<User>  {
+      const resp = await this.http.post(this.url + '/user/register', req, {});
+      return Promise.resolve(new User("", ""));
     }
 
     async GetPlayer(token: string): Promise<Player>  {

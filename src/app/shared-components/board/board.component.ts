@@ -1,5 +1,5 @@
 import { AfterViewChecked, AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { GameService } from '../../game.service';
+import { GameService } from '../../services/game.service';
 import { TileComponent } from '../tile/tile.component';
 import {ClickRole, Piece, Tile} from '../../models/game';
 import { Subject } from 'rxjs';

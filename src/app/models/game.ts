@@ -1,7 +1,7 @@
 import { BehaviorSubject, of } from "rxjs";
 import { Utilities } from "./settings";
 import { TileComponent } from "../shared-components/tile/tile.component";
-import { GameService } from "../game.service";
+import { GameService } from "../services/game.service";
 
 export enum ClickRole  {
   FIRST_CLICK = 1,

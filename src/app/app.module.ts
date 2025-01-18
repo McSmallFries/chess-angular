@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppComponent } from './app.component';
-import { TileComponent } from './shared-components/tile/tile.component';
-import { BoardComponent } from './shared-components/board/board.component';
-import { GameService } from './game.service';
-import { Tile } from './models/game';
+import { GameService } from './services/game.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { WebClientService } from './webclient.service';
+import { WebClientService } from './services/webclient.service';
 import { PagesModule } from './pages/pages.module';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { AppRoutingModule } from './app-routing.module';
+import { AuthGuard } from './services/auth.guard';
+import { AppGlobalService } from './services/globals.service';
+import { SharedModule } from './shared-components/shared.module';
 
 @NgModule({
   declarations: [
@@ -17,9 +18,11 @@ import { PagesModule } from './pages/pages.module';
   imports: [
     BrowserModule,
     HttpClientModule,
-    PagesModule
+    PagesModule,
+    RouterOutlet, 
+    AppRoutingModule
   ],
-  providers: [GameService, WebClientService, HttpClient],
+  providers: [AppGlobalService, GameService, WebClientService, HttpClient, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

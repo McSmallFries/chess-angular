@@ -6,13 +6,13 @@
       <a class="navbar-brand" href="#"><img style="max-width: 60px;max-height: 50px;" src="../../../assets/my-chess-logo.png"/></a>
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item active mx-10">
-          <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
+          <a routerLink="/home" class="nav-link" routerLinkActive="active" ariaCurrentWhenActive="page">Home<span class="sr-only"></span></a>
         </li>
         <li class="nav-item mx-10">
-          <a class="nav-link" href="#">Link</a>
+            <a routerLink="/game" class="nav-link" routerLinkActive="active" ariaCurrentWhenActive="page">In Game</a>
         </li>
         <li class="nav-item mx-10">
-          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Admin</a>
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0" style="display: inline-flex; padding-right:10px;">

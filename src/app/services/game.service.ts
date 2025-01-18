@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BoardMatrix, ClickRole, Direction, Piece, Player, PlayerClicks, Tile } from './models/game';
-import { Utilities } from './models/settings';
-import { TileComponent } from './shared-components/tile/tile.component';
+import { BoardMatrix, ClickRole, Direction, Piece, Player, PlayerClicks, Tile } from '../models/game';
+import { Utilities } from '../models/settings';
+import { TileComponent } from '../shared-components/tile/tile.component';
 import { HttpClient } from '@angular/common/http'
 import { WebClientService } from './webclient.service';
 @Injectable({
