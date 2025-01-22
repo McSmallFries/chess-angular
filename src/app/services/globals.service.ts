@@ -27,16 +27,18 @@ export class AppGlobalService {
     const hasUsername = !!u.username;
     const hasEmail = !!u.email;
     const userLoginReq = new LoginRequest(u, up);
-    let id;
+    let user;
     if (hasUsername && hasPassword && !hasEmail)  {
-        id = await this.service.Login(userLoginReq);
+        user = await this.service.Login(userLoginReq);
         this.currentUser = u;
         this.isUserLoggedIn = true;
     }
     else if (hasEmail && hasUsername && hasPassword)  {
-        id = await this.service.Register(userLoginReq);
+        user = await this.service.Register(userLoginReq);
         this.currentUser = u;
         this.isUserLoggedIn = true;
+        console.log(u);
+        console.log("logged in.")
     }
     else  {
         this.isUserLoggedIn = false;

@@ -14,7 +14,6 @@ export class AppComponent implements OnInit {
 
   }
   ngOnInit()  {
-    debugger;
     this.globals.setIsUserLoggedIn(localStorage.getItem('isLoggedIn') === 'true')
     if (this.globals.isUserLoggedIn)  {
       this.router.navigate(['/dashboard']);
