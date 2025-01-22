@@ -28,6 +28,7 @@ export class AppGlobalService {
     const hasEmail = !!u.email;
     const userLoginReq = new LoginRequest(u, up);
     let user;
+    debugger;
     if (hasUsername && hasPassword && !hasEmail)  {
         user = await this.service.Login(userLoginReq);
         this.currentUser = u;

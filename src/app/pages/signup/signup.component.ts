@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import $ from "jquery";
 import { User, UserPassword } from 'src/app/models/web';
 import { AppGlobalService } from 'src/app/services/globals.service';
@@ -8,14 +9,16 @@ import { AppGlobalService } from 'src/app/services/globals.service';
   styleUrls: ['./signup.component.scss']
 })
 export class SignupPageComponent implements OnInit {
-    title = 'chess-angular';
+    PageTitle = 'Sign Up!';
+
     loading: boolean = false;
     txtUsername: string = '';
     txtPassword: string = '';
     txtEmail: string = '';
     formGroup: any;
+    isStateSignup = true;
 
-    constructor(private globals: AppGlobalService)  {
+    constructor(private globals: AppGlobalService, private router: Router)  {
 
     }
 
@@ -24,20 +27,34 @@ export class SignupPageComponent implements OnInit {
         this.attachCssEventHandler();
     }
 
+    onToggleChange(params: any)  {
+        this.isStateSignup = params;
+        this.toggleEmailInput(!params);
+        if (params)  {
+            this.PageTitle = 'Sign Up!';
+        } else {
+            this.PageTitle = 'Sign In!';
+        }
+    }
+
     async onSubmit(params: any)  {
         this.loading = true;
         const error = false;
         const vEmail = this.validateEmail(this.txtEmail);
         const sUsername = this.sanitizeInput(true, this.txtUsername);
         const sPassword = this.sanitizeInput(false, this.txtPassword);
+        const allow = (vEmail && sUsername && sPassword) || (sUsername && sPassword && !vEmail);
         let success
-        if (vEmail && sUsername && sPassword)  {
-            const u = new User(sUsername, vEmail);
-            const up = new UserPassword(0, sPassword)
+        if (allow)  {
+            const e = vEmail ? vEmail : '';
+            const u = new User(sUsername, e);
+            const up = new UserPassword(0, sPassword);
             success = await this.globals.LoginOrRegister(u, up);
         }
         if (!success)  {
             console.log("Error - User not signed in");
+        } else {
+            this.router.navigate(['/home']);
         }
         Promise.resolve();
     }
@@ -74,5 +91,13 @@ export class SignupPageComponent implements OnInit {
             $('#fname').trigger('focus');
             }, 500);
         });
+    }
+
+    private toggleEmailInput(show = false)  {
+        const elem = document.getElementById('emailInput');
+        const value = show ? '0' : '1';
+        if (elem)  {
+            elem.style.opacity = value;
+        }
     }
 }

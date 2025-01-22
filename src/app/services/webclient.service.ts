@@ -9,9 +9,9 @@ import { LoginRequest, User, UserPassword } from '../models/web';
 
 export class WebClientService {
   
-    url = 'http://localhost:1323';
+    url = 'http://localhost:8081';
     gameId: number = 0;
-    socket = webSocket('ws://localhost:8081');
+    socket = webSocket('ws://localhost:8080');
 
     constructor(private http: HttpClient) {
       this.socket.subscribe(this.socketHandler);
@@ -29,8 +29,18 @@ export class WebClientService {
     }
 
     async Login(req: LoginRequest): Promise<User>  {
-      const resp = await this.http.post(this.url + '/user/login', req, {});
-      return Promise.resolve(new User("", ""));
+      try  {
+        debugger;
+        const resp = await this.http.post<User | undefined>(this.url + '/user/login', req, {}).toPromise();
+        if (resp === undefined)  {
+          console.log("user not logged in");
+          throw new Error;
+        }
+        return Promise.resolve(resp!);
+      } catch (err)  {
+        return Promise.reject('error')
+      }
+      
     }
 
     async Register(req: LoginRequest): Promise<User>  {
