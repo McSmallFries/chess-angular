@@ -30,22 +30,24 @@ export class SignupPageComponent implements OnInit {
         const vEmail = this.validateEmail(this.txtEmail);
         const sUsername = this.sanitizeInput(true, this.txtUsername);
         const sPassword = this.sanitizeInput(false, this.txtPassword);
-        let idUserResponse
+        let success
         if (vEmail && sUsername && sPassword)  {
             const u = new User(sUsername, vEmail);
             const up = new UserPassword(0, sPassword)
-            idUserResponse = await this.globals.LoginOrRegister(u, up);
+            success = await this.globals.LoginOrRegister(u, up);
         }
-        
+        if (!success)  {
+            console.log("Error - User not signed in");
+        }
+        Promise.resolve();
     }
 
     validateEmail(email: string): string | false  {
-
+        return email;
         return false;
     }
 
     sanitizeInput(forUsername: boolean, text: string): string | false  {
-
         if (forUsername)  {
             const username = text;
             return username;

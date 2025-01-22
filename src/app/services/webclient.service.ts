@@ -34,8 +34,18 @@ export class WebClientService {
     }
 
     async Register(req: LoginRequest): Promise<User>  {
-      const resp = await this.http.post(this.url + '/user/register', req, {});
-      return Promise.resolve(new User("", ""));
+      try  {
+        debugger;
+        const resp: User | undefined = await this.http.post<User | undefined>
+        (this.url + '/user/register', req, {}).toPromise();
+        if (resp === undefined) {
+          console.log("user not registered")
+          throw new Error
+        };
+        return Promise.resolve(resp!);
+      } catch (err)  {
+        return Promise.reject('error.');
+      }
     }
 
     async GetPlayer(token: string): Promise<Player>  {
