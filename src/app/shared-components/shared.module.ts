@@ -6,16 +6,26 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ToggleSwitchComponent } from './toggle-switch/toggle-switch.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     TileComponent,
+    ToggleSwitchComponent,
     BoardComponent,
     NavbarComponent
   ],
-  imports: [BrowserModule, CommonModule, RouterLink, RouterLinkActive],
+  imports: [
+    BrowserModule,
+    CommonModule, 
+    FormsModule, 
+    RouterLink, 
+    RouterLinkActive],
   providers: [],
   exports: [
+    ToggleSwitchComponent,
+    FormsModule,
     TileComponent, 
     BoardComponent, 
     BrowserModule, 
@@ -24,6 +34,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     RouterLink,
     RouterLinkActive
 ],
-  bootstrap: [BoardComponent, TileComponent]
+  bootstrap: [BoardComponent, TileComponent, ToggleSwitchComponent, NavbarComponent]
 })
 export class SharedModule { }

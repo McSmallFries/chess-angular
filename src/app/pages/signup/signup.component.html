@@ -1,9 +1,11 @@
 
 <div class="signup">
-    <h1 class="signup-title" style="text-align: center; display: block; bottom:0;">Sign Up</h1>
-    <form class="signup-body" style="position: relative;">
-      <label>
-        <input type="email" [(ngModel)]="txtEmail" [ngModelOptions]="{standalone: true}" placeholder="Email">
+    <h1 class="signup-title" style="text-align: center; display: block; bottom:0;">{{ PageTitle }}</h1>
+    
+    <form class="signup-body d-flex" style="position: relative;">
+      <app-toggle-switch [isSelected]="isStateSignup" (onChange)="onToggleChange($event)"></app-toggle-switch>
+      <label id="emailInput">
+        <input type="email"  [disabled]="!isStateSignup" [(ngModel)]="txtEmail" [ngModelOptions]="{standalone: true}" placeholder="Email">
         <span>Email</span>
       </label>
       <label>

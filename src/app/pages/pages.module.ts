@@ -22,7 +22,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     SharedModule,
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
   ],
   exports: [
     InGamePageComponent,

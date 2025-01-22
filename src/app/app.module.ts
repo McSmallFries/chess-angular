@@ -10,6 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AuthGuard } from './services/auth.guard';
 import { AppGlobalService } from './services/globals.service';
 import { SharedModule } from './shared-components/shared.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import { SharedModule } from './shared-components/shared.module';
     HttpClientModule,
     PagesModule,
     RouterOutlet, 
-    AppRoutingModule
+    AppRoutingModule, BrowserAnimationsModule
   ],
   providers: [AppGlobalService, GameService, WebClientService, HttpClient, AuthGuard],
   bootstrap: [AppComponent]
