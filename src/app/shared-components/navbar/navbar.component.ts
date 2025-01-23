@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-navbar',
@@ -7,9 +8,21 @@ import { AfterViewInit, Component, OnInit } from "@angular/core";
   })
   export class NavbarComponent implements OnInit, AfterViewInit {
 
-    constructor()  {
+    constructor(private router: Router)  {
 
     }
+
+    onSubmenuNavigate(params: any)  {
+      console.log(params);
+      switch (params)  {
+        case "game":  {
+          debugger;
+          this.router.navigate([`/${params}`]);
+        }
+      }
+    }
+
+    
 
     ngAfterViewInit(): void {
         
