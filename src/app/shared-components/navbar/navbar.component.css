@@ -16,6 +16,12 @@
     box-shadow: 0 2px 2px 2px rgb(57, 57, 57);
 }
 
+.popover-menu  {
+    left: 2rem;
+    bottom: 1rem;
+    position: absolute;
+}
+
 #nav-search-input::placeholder {
         color: rgb(136, 135, 135);
         opacity: 1; /* Firefox */

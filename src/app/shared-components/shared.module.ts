@@ -8,13 +8,15 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ToggleSwitchComponent } from './toggle-switch/toggle-switch.component';
 import { FormsModule } from '@angular/forms';
+import { PopoverMenuComponent } from './popover-menu/popover-menu.component';
 
 @NgModule({
   declarations: [
     TileComponent,
     ToggleSwitchComponent,
     BoardComponent,
-    NavbarComponent
+    NavbarComponent,
+    PopoverMenuComponent
   ],
   imports: [
     BrowserModule,
@@ -25,6 +27,7 @@ import { FormsModule } from '@angular/forms';
   providers: [],
   exports: [
     ToggleSwitchComponent,
+    PopoverMenuComponent,
     FormsModule,
     TileComponent, 
     BoardComponent, 
@@ -34,6 +37,10 @@ import { FormsModule } from '@angular/forms';
     RouterLink,
     RouterLinkActive
 ],
-  bootstrap: [BoardComponent, TileComponent, ToggleSwitchComponent, NavbarComponent]
+  bootstrap: [BoardComponent, 
+    TileComponent, 
+    ToggleSwitchComponent, 
+    PopoverMenuComponent,
+    NavbarComponent]
 })
 export class SharedModule { }

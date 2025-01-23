@@ -33,16 +33,19 @@ export class AppGlobalService {
         user = await this.service.Login(userLoginReq);
         this.currentUser = u;
         this.isUserLoggedIn = true;
+        localStorage.setItem('isLoggedIn', 'true');
     }
     else if (hasEmail && hasUsername && hasPassword)  {
         user = await this.service.Register(userLoginReq);
         this.currentUser = u;
         this.isUserLoggedIn = true;
+        localStorage.setItem('isLoggedIn', 'true');
         console.log(u);
         console.log("logged in.")
     }
     else  {
         this.isUserLoggedIn = false;
+        localStorage.removeItem('isLoggedIn');
     }
     return this.isUserLoggedIn;
   }
