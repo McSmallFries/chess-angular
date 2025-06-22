@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppGlobalService } from 'src/app/services/globals.service';
 
 @Component({
   selector: 'in-game-page',
@@ -8,10 +9,12 @@ import { Component, OnInit } from '@angular/core';
 export class InGamePageComponent implements OnInit {
   title = 'chess-angular';
 
-  constructor()  {
+  constructor(private globals: AppGlobalService)  {
 
   }
-  ngOnInit()  {
-    
+  async ngOnInit()  {
+    await this.globals.GetNewGame().then(() =>  {
+      this.globals.StartNewGame();
+    });
   }
 }

@@ -57,9 +57,9 @@ constructor(private client: WebClientService) {
     // if (!tiles[0]?.tile.currentlyOccupiedBy) { return; }
 
     if (tiles.length === ClickRole.FIRST_CLICK) {
-      this.SubjectTile = tiles[0].tile as Tile;
+      this.SubjectTile = tiles[0].tile;
       this.SubjectTile.currentlyOccupiedBy?.CanMoveToTiles
-        .push(...this.calculateAvailableMoves(this.SubjectTile.currentlyOccupiedBy as Piece) as Tile[]);
+        .push(...this.calculateAvailableMoves(this.SubjectTile.currentlyOccupiedBy));
       this.SubjectPiece = this.SubjectTile.currentlyOccupiedBy;
 
       this.board.PrintBoard(); // TODO remove.
@@ -365,11 +365,12 @@ constructor(private client: WebClientService) {
     this.tilesUnderAttack = [];
   }
 
+  // LOL. 
   async DoStuff()  {
-    const p = new Player()
-    p.id = 0;
-    p.name = "JohnD0e"
-    await this.client.JoinLobby(p)
+    // const p = new Player()
+    // p.id = 0;
+    // p.name = "JohnD0e"
+    // await this.client.JoinLobby(p)
   }
 }
 

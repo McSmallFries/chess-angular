@@ -343,7 +343,7 @@ export class Tile  {
   index: string;
   isWhite: boolean;
   isHighlighted: boolean;
-  currentlyOccupiedBy: Piece | undefined;
+  currentlyOccupiedBy?: Piece;
 
   constructor(index: string = '', isWhite: boolean = false)  {
     this.isWhite = isWhite;
@@ -370,8 +370,8 @@ export class OnlineGame  {
   // make a http method that uses this to find the 
   // stored game on the server and load game
   // info based on these values.
-  gameId: string = ''; 
-  lobbyId: string = '';
+  gameId: number = 0; 
+  lobbyId: number = 0;
 }
 
 export class ChessGame  {
@@ -392,6 +392,11 @@ export class Lobby {
 }
 
 export class Player  {
-  id: number = 0;
-  name: string = '';
+  playerId: number = 0;
+  userId: number = 0;
+  name = '';
+  constructor(pId: number = 0, uId:number)  {
+    this.playerId = pId;
+    this.userId = uId;
+  }
 }

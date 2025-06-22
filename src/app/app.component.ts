@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   ngOnInit()  {
     this.globals.setIsUserLoggedIn(localStorage.getItem('isLoggedIn') === 'true')
     if (this.globals.isUserLoggedIn)  {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/home']);
       return;
     } 
     else {

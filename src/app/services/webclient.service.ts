@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { webSocket } from 'rxjs/webSocket';
-import { Player } from '../models/game';
+import { OnlineGame, Player } from '../models/game';
 import { LoginRequest, User, UserPassword } from '../models/web';
 @Injectable({
   providedIn: 'root'
@@ -11,10 +11,21 @@ export class WebClientService {
   
     url = 'http://localhost:8081';
     gameId: number = 0;
-    socket = webSocket('ws://localhost:8080');
+    socket: any;
 
     constructor(private http: HttpClient) {
+      
+    }
+
+    initializeSocket(gameId: number): void  {
+      debugger;
+      if (!gameId)  {
+        return;
+      }
+      this.socket = webSocket(`ws://localhost:8081/ws?gameId=${gameId}`);
       this.socket.subscribe(this.socketHandler);
+
+
     }
 
     socketHandler = (params: any) => {
@@ -26,6 +37,24 @@ export class WebClientService {
       const meep = await this.http.get(this.url + '/hello').toPromise();
       console.log(meep)
       console.log("should be doneee")
+    }
+
+    async WsConnect(id: number)  {
+
+    }
+
+    async GetNewGame(idUser: number): Promise<OnlineGame>  {
+      try  {
+        debugger;
+        const resp = await this.http.get<OnlineGame>(this.url + '/game/new?idUser=' + idUser).toPromise();
+        if (resp === undefined)  {
+          console.log(resp);
+          throw new Error
+        }
+        return Promise.resolve(resp!);
+      } catch (err)  {
+        return Promise.reject();
+      }
     }
 
     async Login(req: LoginRequest): Promise<User>  {
@@ -59,9 +88,11 @@ export class WebClientService {
     }
 
     async GetPlayer(token: string): Promise<Player>  {
-      const resp = await this.http.get(this.url + '/player/' + token);
+      const resp = await this.http.get(this.url + '/player/' + token).toPromise();
       console.log(resp);
-      return Promise.resolve(new Player)
+      // return Promise.resolve(new Player(resp))
+      // REJECTS :O
+      return Promise.reject();
     }
 
     async LoadGameId(): Promise<number>  {
